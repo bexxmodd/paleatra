@@ -9,34 +9,50 @@ use std::cmp::Reverse;
 use crate::colors::ColorCount;
 
 fn main() {
-    let path = String::from("/home/bexx/Projects/paleatra/img/future_world_hori.jpg");
+    let n = 10; // number of colors in palette
+    let path = String::from("/home/bexx/Projects/paleatra/img/ibra.jpg");
     let img1 = image::open(path).unwrap();
 
     println!("Dimensions: {}x{}", img1.dimensions().0, img1.dimensions().1);
     let colors = get_colors_from(&img1);
+    // let mut img_cpy = ImageBuffer::new(img1.dimensions().0 + 20, img1.dimensions().1 + 20);
 
-    let top_ten = get_most_freq(&colors, 30);
+    let top_n = get_most_freq(&colors, n);
 
-    // TODO: 1. create a new square image with each color frop top list and hex code
+    // NOTE: create a pallete image with yellowish background and top 10 colors
     let dims = compute_palette_size(&img1.dimensions());
-    // println!("Palette Dims: {}x{}", dims.0, dims.1);
-    let mut img = ImageBuffer::new(dims.0 * 30, dims.1);
+    let palette = create_palette(dims, n as u32, &top_n);
+    palette.save("result.jpg").unwrap();
+
+
+    // TODO: 2. append colored squares to the right if image is vertical, bottom if horizontal
+
+    println!("Size of a map: {}", colors.len());
+}
+
+pub fn create_palette(dims: (u32, u32), n: u32,
+                      top_colors: &Vec<(u32, &ColorCount)>)
+    -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+    let pal_width = dims.0 * n + 110;
+    let pal_height = dims.1 + 10;
+
+    let mut palette = ImageBuffer::from_fn(
+        pal_width, pal_height, |_,_| { Rgba([255, 252, 234, 1]) }
+    );
+
     let mut xp = 0;
-    for color in &top_ten {
+    for color in top_colors {
+        xp += 10; // skip the frame vertical line
         for _ in 0..dims.0 {
             let mut yp = 0;
             while yp < dims.1 {
-                img.put_pixel(xp, yp, color.1.rgba);
+                palette.put_pixel(xp, yp, color.1.rgba);
                 yp += 1;
             }
             xp += 1;
         }
     }
-    img.save("palit.png").unwrap();
-
-    // TODO: 2. append colored squares to the right if image is vertical, bottom if horizontal
-
-    println!("Size of a map: {}", colors.len());
+    palette
 }
 
 pub fn compute_palette_size(img_dims: &(u32, u32)) -> (u32, u32) {
