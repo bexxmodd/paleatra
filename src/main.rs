@@ -9,24 +9,30 @@ use std::cmp::Reverse;
 use crate::colors::ColorCount;
 
 fn main() {
-    let path = String::from("/home/bexx/Projects/paleatra/img/test.jpg");
+    let path = String::from("/home/bexx/Projects/paleatra/img/future_world_hori.jpg");
     let img1 = image::open(path).unwrap();
 
     println!("Dimensions: {}x{}", img1.dimensions().0, img1.dimensions().1);
     let colors = get_colors_from(&img1);
 
-    let top_ten = get_most_freq(&colors, 10);
+    let top_ten = get_most_freq(&colors, 30);
 
     // TODO: 1. create a new square image with each color frop top list and hex code
     let dims = compute_palette_size(&img1.dimensions());
-    println!("Palette Dims: {}x{}", dims.0, dims.1);
-    let mut img = ImageBuffer::new(dims.0, dims.1);
+    // println!("Palette Dims: {}x{}", dims.0, dims.1);
+    let mut img = ImageBuffer::new(dims.0 * 30, dims.1);
+    let mut xp = 0;
     for color in &top_ten {
-        for (_, _, pix) in img.enumerate_pixels_mut() {
-            *pix = color.1.rgba;
+        for _ in 0..dims.0 {
+            let mut yp = 0;
+            while yp < dims.1 {
+                img.put_pixel(xp, yp, color.1.rgba);
+                yp += 1;
+            }
+            xp += 1;
         }
-        img.save("palit.png").unwrap();
     }
+    img.save("palit.png").unwrap();
 
     // TODO: 2. append colored squares to the right if image is vertical, bottom if horizontal
 
