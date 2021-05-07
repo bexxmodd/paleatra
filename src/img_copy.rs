@@ -21,9 +21,11 @@ impl FramedPicture {
     ///
     /// # Return
     /// * FramedPicture struct
-    pub fn new(width: u32, height: u32) -> Self {
+    pub fn new(width: u32, height: u32, n: Option<u32>) -> Self {
+        let dims = FramedPicture::compute_palette_size(
+            width, n.unwrap_or(10));
         let w = width + 20;
-        let h = height+ 30 + dims.0;
+        let h = height + 30 + dims.0;
         let tmp: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::from_fn(
             w, h, |_,_| { Rgba([255, 252, 234, 1]) });
 
@@ -46,26 +48,26 @@ impl FramedPicture {
     pub fn draw_palette(&mut self, n: u32,
                         top_colors: &Vec<(u32, &ColorCount)>)
                         -> ImageBuffer<Rgba<u8>, Vec<u8>> {
-        let dims =
-            FramedPicture::compute_palette_size(
-                self.buffer.width() - 20, 10);
-        // FIXME correct the width allocation to match length of the original buffer
-        let pwidth = dims.0 * n + dims.1 * 9;
+        let dims = FramedPicture::compute_palette_size(
+            self.buffer.width() - 20, n);
+
+        let pwidth = self.buffer.width() - 20;
         let pheight = dims.0 + 10;
 
         let mut palette = ImageBuffer::new(pwidth, pheight);
 
         let mut xp = 0;
-        for color in top_colors {
+        for color in top_colors { // fill box with each color
             for _ in 0..dims.0 {
                 let mut yp = 0;
                 while yp < dims.0 {
+                    if xp >= pwidth { break; }
                     palette.put_pixel(xp, yp, color.1.rgba);
                     yp += 1;
                 }
                 xp += 1;
             }
-            xp += dims.1; // skip the frame's vertical line
+            xp += dims.1; // keep space between boxes
         }
         palette
     }
@@ -105,7 +107,7 @@ impl FramedPicture {
     /// # Returns
     /// Tuple with the size of square's sides and width of a pillar
     pub fn compute_palette_size(length: u32, boxes: u32) -> (u32, u32){
-        let size = (length - 20) / (boxes + 1);
+        let size = length / (boxes + 1);
         let pillar = (size as f32 * 0.13) as u32;
         (size, pillar)
     }
@@ -117,6 +119,6 @@ impl FramedPicture {
     /// palette - image buffer that contains n boxes separated with pillars.
     pub fn stick_piece(&mut self, palette: &ImageBuffer<Rgba<u8>, Vec<u8>>) {
         imageops::overlay(
-            &mut self.buffer, palette, 10, self.divider);
+            &mut self.buffer, palette, 10, self.y_divider);
     }
 }
