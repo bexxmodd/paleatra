@@ -9,6 +9,7 @@ use crate::picture::FramedPicture;
 use crate::utils::{get_colors_from, get_most_freq};
 use structopt::StructOpt;
 
+/// simple CLI which holds terminal arguments
 #[derive(StructOpt)]
 struct Cli {
     #[structopt(parse(from_os_str))]
