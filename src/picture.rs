@@ -121,4 +121,9 @@ impl FramedPicture {
         imageops::overlay(
             &mut self.buffer, palette, 10, self.y_divider);
     }
+
+    /// Get the image dimensions of this image buffer in a form of tuple
+    pub fn get_dimensions(&self) -> (u32, u32) {
+        self.buffer.dimensions()
+    }
 }
