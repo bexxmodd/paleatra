@@ -1,8 +1,7 @@
 use image::{Rgba, DynamicImage, GenericImageView};
-use std::collections::{BTreeSet, BinaryHeap};
+use std::collections::{BinaryHeap, HashSet};
 use crate::colors::ColorCount;
 use std::cmp::Reverse;
-
 
 /// Grabs the `n` most frequently present elements from the Binary Tree Map
 ///
@@ -12,9 +11,14 @@ use std::cmp::Reverse;
 ///
 /// # Return
 /// * vector - of n most frequent ColorCount structs
-pub fn get_most_freq(set: &BTreeSet<ColorCount>, n: usize) -> Vec<(u32, &ColorCount)> {
-    let mut heap = BinaryHeap::with_capacity(n + 1);
+pub fn get_most_freq(set: &HashSet<ColorCount>, n: usize) -> Vec<(u32, &ColorCount)> {
+    let mut heap: BinaryHeap<Reverse<(u32, &ColorCount)>>  = BinaryHeap::with_capacity(n + 1);
     for c in set.into_iter() {
+        match heap.peek() {
+            Some(v) =>
+                if v.0.1.measure_diff(c) < i32::abs(300) { continue; },
+            _ => {}
+        }
         heap.push(Reverse((c.count, c)));
         if heap.len() > n {
             heap.pop();
@@ -32,8 +36,8 @@ pub fn get_most_freq(set: &BTreeSet<ColorCount>, n: usize) -> Vec<(u32, &ColorCo
 ///
 /// # Returns
 /// * Binary Tree Set that contains ColorCount structs
-pub fn get_colors_from(img: &DynamicImage) -> BTreeSet<ColorCount> {
-    let mut colors : BTreeSet<ColorCount> = BTreeSet::new();
+pub fn get_colors_from(img: &DynamicImage) -> HashSet<ColorCount> {
+    let mut colors : HashSet<ColorCount> = HashSet::new();
 
     for i in img.pixels() {
         let c = ColorCount::new(i.2);

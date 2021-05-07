@@ -26,8 +26,8 @@ fn main() {
     imgcpy.copy_img_into(10, &img1);
     imgcpy.stick_piece(&palette);
 
-    imgcpy.save_img("example.jpg");
-    palette.save("ex_pal.jpg").unwrap();
+    imgcpy.save_img("img/results/rickmorty.jpg");
+    palette.save("img/results/rickmorty_pal.jpg").unwrap();
     // println!("After editing: {}x{}", )
     println!("Size of a map: {}", colors.len());
 }
