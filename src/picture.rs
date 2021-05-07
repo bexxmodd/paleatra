@@ -1,9 +1,9 @@
 use image::{ImageBuffer, DynamicImage, Rgba, GenericImageView, imageops};
 use crate::colors::ColorCount;
 
-/// Usage to build an new image with extended boarders as frame
-/// and palette of n most frequently found colors in the original image.
-/// Contains ImageBuffer and y coordinate to divide picture and palette
+/// Use to build a new image with extended boarders as 'frame'
+/// and a palette of `n` most frequently found colors in the original image.
+/// Contains `ImageBuffer` and y coordinate that divides picture and palette
 pub struct FramedPicture {
     buffer: ImageBuffer<Rgba<u8>, Vec<u8>>,
     y_divider: u32,
@@ -20,7 +20,7 @@ impl FramedPicture {
     /// * height - of the image buffer
     ///
     /// # Return
-    /// * FramedPicture struct
+    /// * `FramedPicture` struct
     pub fn new(width: u32, height: u32, n: Option<u32>) -> Self {
         let dims = FramedPicture::compute_palette_size(
             width, n.unwrap_or(10));
@@ -35,9 +35,9 @@ impl FramedPicture {
         }
     }
 
-    /// Draws the palette with n boxes for top n colors.
-    /// Algorithm draws color pixels one by one from given vector
-    /// and makes jumps between colors with width of a pillar.
+    /// Draws the palette with `n` boxes for top `n` colors.
+    /// Algorithm fills the boxes with colored pixels and
+    /// makes jumps between colored boxes with width of a pillar.
     ///
     /// # Arguments
     /// * n - number of pillars (splits between colors)
@@ -87,9 +87,9 @@ impl FramedPicture {
         }
     }
 
-    /// Save this buffer as an image
-    /// image format will be set based on provided path,
-    /// which is expected to include the name of the new file
+    /// Saves current buffer as an image.
+    /// Image format will be set based on the provided path,
+    /// which is expected to include the name of the new file.
     ///
     /// # Argument
     /// * path - full or relative path with new file name and format

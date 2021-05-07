@@ -3,9 +3,9 @@ use std::cmp::Ordering;
 use crate::utils;
 
 /// Struct to keep track of number of occurrences of each color
-/// Contains the RGBA and hex code of the color
+/// Contains the RGBA tuple and hex code of the color
 pub struct ColorCount {
-    pub rgba: Rgba<u8>,
+    pub rgba: Rgba<u8>, // Tuple of four colors
     pub hex: String,
     pub count: u32,
 }
@@ -13,7 +13,7 @@ pub struct ColorCount {
 impl ColorCount {
     /// Constructor which generates hex code of
     /// the color from RGBA and sets count to 1
-    pub fn new(rgba: Rgba<u8>) -> ColorCount {
+    pub fn new(rgba: Rgba<u8>) -> Self {
         ColorCount {
             rgba,
             hex: utils::generate_hex(&rgba),
