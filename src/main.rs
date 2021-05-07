@@ -1,50 +1,41 @@
 mod colors;
 mod utils;
-mod img_processor;
+mod img_copy;
 
 extern crate image;
 
 use std::collections::{BinaryHeap, BTreeSet};
-use image::{GenericImageView, Rgba, DynamicImage, ImageBuffer};
+use image::{GenericImageView, DynamicImage};
 use std::cmp::Reverse;
 use crate::colors::ColorCount;
-use crate::img_processor::{compute_palette_size, copy_img_into, draw_palette};
-use image::imageops;
+use crate::img_copy::FramedPicture;
 
 fn main() {
-    let n = 10; // number of colors in palette
-    let path = String::from("/home/bexx/Projects/paleatra/img/akira.jpg");
+    let n = 10u32; // number of colors in palette
+    let path = String::from(
+        "/home/bexx/Projects/paleatra/img/rickmorty.jpg");
     let img1 = image::open(path).unwrap();
 
-    println!("Dimensions: {}x{}", img1.dimensions().0, img1.dimensions().1);
+    println!("Original Dimensions: {}x{}", img1.dimensions().0, img1.dimensions().1);
     let colors = get_colors_from(&img1);
 
 
-    let top_n = get_most_freq(&colors, n);
+    let top_n = get_most_freq(&colors, n as usize);
 
-
-    // NOTE: 1. Create copy of an image with white frame around it
-    let dims = compute_palette_size(&img1.dimensions(), 10);
+    let dims = FramedPicture::compute_palette_size(
+        img1.dimensions().0, 10);
     let w = img1.dimensions().0 + 20;
     let h = img1.dimensions().1 + 30 + dims.0;
-    let mut imgcpy: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::from_fn(
-        w, h, |_,_| { Rgba([255, 252, 234, 1]) }
-    );
-    copy_img_into(&mut imgcpy, 10, &img1);
 
+    let mut imgcpy = FramedPicture::new(
+        w, h, img1.dimensions().1 + 20);
+    let mut palette = imgcpy.draw_palette(n as u32, &top_n);
+    imgcpy.copy_img_into(10, &img1);
+    imgcpy.stick_piece(&palette);
 
-    // NOTE: 2. create a pallete image with yellowish background and top 10 colors
-    let mut palette = draw_palette(dims, n as u32, &top_n);
-
-    let mut xp = img1.dimensions().0 + 10;
-    let mut yp = img1.dimensions().1 + 10;
-    // let mut y= 0;
-    imageops::overlay(
-        &mut imgcpy, &mut palette, 10, img1.height() + 20);
-
-    imgcpy.save("copy.jpg").unwrap();
-    palette.save("result.jpg").unwrap();
-
+    imgcpy.save_img("result.jpg");
+    palette.save("pal.jpg").unwrap();
+    // println!("After editing: {}x{}", )
     println!("Size of a map: {}", colors.len());
 }
 
