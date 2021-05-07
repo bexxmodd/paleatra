@@ -39,13 +39,13 @@ output:
 ## Follow Me on Social Media
 <p align="center">
     <a href="https://www.twitter.com/bexxmodd">
-        <img alt="twitter" src="https://i.imgur.com/fFlVB1c.png" height=35>
+        <img alt="twitter" src="https://i.imgur.com/fFlVB1c.png" height=40>
     </a>
     <a href="https://www.linkedin.com/in/bmodebadze">
-        <img alt="linkedin" src="https://i.imgur.com/wcvwfoZ.png" height=35>
+        <img alt="linkedin" src="https://i.imgur.com/wcvwfoZ.png" height=40>
     </a>
     <a href="https://www.github.com/bexxmodd">
-        <img alt="github" src="https://i.imgur.com/gnDF5oQ.png" height=35>
+        <img alt="github" src="https://i.imgur.com/gnDF5oQ.png" height=40>
     </a>
 </p>
 
