@@ -22,13 +22,8 @@ fn main() {
 
     let top_n = get_most_freq(&colors, n as usize);
 
-    let dims = FramedPicture::compute_palette_size(
-        img1.dimensions().0, 10);
-    let w = img1.dimensions().0 + 20;
-    let h = img1.dimensions().1 + 30 + dims.0;
-
     let mut imgcpy = FramedPicture::new(
-        w, h, img1.dimensions().1 + 20);
+        img1.width(), img1.height());
     let mut palette = imgcpy.draw_palette(n as u32, &top_n);
     imgcpy.copy_img_into(10, &img1);
     imgcpy.stick_piece(&palette);
