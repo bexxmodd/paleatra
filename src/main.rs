@@ -1,5 +1,6 @@
 mod colors;
 mod utils;
+mod img_processor;
 
 extern crate image;
 
@@ -7,64 +8,45 @@ use std::collections::{BinaryHeap, BTreeSet};
 use image::{GenericImageView, Rgba, DynamicImage, ImageBuffer};
 use std::cmp::Reverse;
 use crate::colors::ColorCount;
+use crate::img_processor::{compute_palette_size, copy_img_into, draw_palette};
+use image::imageops;
 
 fn main() {
     let n = 10; // number of colors in palette
-    let path = String::from("/home/bexx/Projects/paleatra/img/ibra.jpg");
+    let path = String::from("/home/bexx/Projects/paleatra/img/akira.jpg");
     let img1 = image::open(path).unwrap();
 
     println!("Dimensions: {}x{}", img1.dimensions().0, img1.dimensions().1);
     let colors = get_colors_from(&img1);
-    // let mut img_cpy = ImageBuffer::new(img1.dimensions().0 + 20, img1.dimensions().1 + 20);
+
 
     let top_n = get_most_freq(&colors, n);
 
-    // NOTE: create a pallete image with yellowish background and top 10 colors
-    let dims = compute_palette_size(&img1.dimensions());
-    let palette = create_palette(dims, n as u32, &top_n);
+
+    // NOTE: 1. Create copy of an image with white frame around it
+    let dims = compute_palette_size(&img1.dimensions(), 10);
+    let w = img1.dimensions().0 + 20;
+    let h = img1.dimensions().1 + 30 + dims.0;
+    let mut imgcpy: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::from_fn(
+        w, h, |_,_| { Rgba([255, 252, 234, 1]) }
+    );
+    copy_img_into(&mut imgcpy, 10, &img1);
+
+
+    // NOTE: 2. create a pallete image with yellowish background and top 10 colors
+    let mut palette = draw_palette(dims, n as u32, &top_n);
+
+    let mut xp = img1.dimensions().0 + 10;
+    let mut yp = img1.dimensions().1 + 10;
+    // let mut y= 0;
+    imageops::overlay(
+        &mut imgcpy, &mut palette, 10, img1.height() + 20);
+
+    imgcpy.save("copy.jpg").unwrap();
     palette.save("result.jpg").unwrap();
-
-
-    // TODO: 2. append colored squares to the right if image is vertical, bottom if horizontal
 
     println!("Size of a map: {}", colors.len());
 }
-
-pub fn create_palette(dims: (u32, u32), n: u32,
-                      top_colors: &Vec<(u32, &ColorCount)>)
-    -> ImageBuffer<Rgba<u8>, Vec<u8>> {
-    let pal_width = dims.0 * n + 110;
-    let pal_height = dims.1 + 10;
-
-    let mut palette = ImageBuffer::from_fn(
-        pal_width, pal_height, |_,_| { Rgba([255, 252, 234, 1]) }
-    );
-
-    let mut xp = 0;
-    for color in top_colors {
-        xp += 10; // skip the frame vertical line
-        for _ in 0..dims.0 {
-            let mut yp = 0;
-            while yp < dims.1 {
-                palette.put_pixel(xp, yp, color.1.rgba);
-                yp += 1;
-            }
-            xp += 1;
-        }
-    }
-    palette
-}
-
-pub fn compute_palette_size(img_dims: &(u32, u32)) -> (u32, u32) {
-    let size: u32;
-    if img_dims.0 > img_dims.1 {
-        size = img_dims.0 / 10;
-    } else {
-        size = img_dims.1 / 10;
-    }
-    (size, size)
-}
-
 
 /// Grabs the n most frequently present elements from the Binary Tree Map
 ///
