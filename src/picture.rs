@@ -1,5 +1,6 @@
 use image::{ImageBuffer, DynamicImage, Rgba, GenericImageView, imageops};
 use crate::colors::ColorCount;
+use std::path::PathBuf;
 
 /// Use to build a new image with extended boarders as 'frame'
 /// and a palette of `n` most frequently found colors in the original image.
@@ -93,7 +94,7 @@ impl FramedPicture {
     ///
     /// # Argument
     /// * path - full or relative path with new file name and format
-    pub fn save_img(&self, path: &str) {
+    pub fn save_img(&self, path: &PathBuf) {
         self.buffer.save(path).unwrap();
     }
 
