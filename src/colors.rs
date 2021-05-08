@@ -49,7 +49,19 @@ impl ColorCount {
         self.count += 1;
     }
 
-    pub fn measure_diff(&self, other: &ColorCount) -> i32 {
+    /// Measure the distance from this color to other color.
+    /// Distance is measure of how distinct is the other color from this.
+    /// If this color is red and the other is just lighter red
+    /// the distance will be very small, approximately |100|.
+    /// If this color is red and the other color is blue
+    /// the measured distance will return a much larger number
+    ///
+    /// # Arguments
+    /// other: color to compare to this color
+    ///
+    /// # Returns
+    /// distance as a rounded integer from this color to other
+    pub fn measure_distance(&self, other: &ColorCount) -> i32 {
         let delta_r = (self.rgba[0] as i32 - other.rgba[0] as i32).pow(2);
         let delta_g = (self.rgba[1] as i32 - other.rgba[1] as i32).pow(2);
         let delta_b = (self.rgba[2] as i32 - other.rgba[2] as i32).pow(2);
