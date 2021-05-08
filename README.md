@@ -24,6 +24,8 @@ output:
 
 ![rickmorty](https://github.com/bexxmodd/paleatra/blob/main/img/results/rickmorty_cpy.jpg?raw=true)
 
+You can check other examples in the `img/results`
+
 
 # TODO
 
