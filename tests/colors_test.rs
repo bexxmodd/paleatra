@@ -35,8 +35,8 @@ fn test_color_measure_diff() {
     let red2 = colors::ColorCount::new(r1);
     let red3 = colors::ColorCount::new(r3);
 
-    let diff0 = red1.measure_diff(&red2);
-    let diff1 = red1.measure_diff(&red3);
+    let diff0 = red1.measure_distance(&red2);
+    let diff1 = red1.measure_distance(&red3);
 
     assert_eq!(diff0, 0);
     assert_eq!(diff1, 25);
