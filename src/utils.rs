@@ -1,4 +1,4 @@
-use image::{Rgba, DynamicImage, GenericImageView};
+use image::{DynamicImage, GenericImageView};
 use std::collections::{BinaryHeap, HashSet};
 use crate::colors::ColorCount;
 use std::cmp::Reverse;
@@ -57,27 +57,3 @@ pub fn get_colors_from(img: &DynamicImage) -> HashSet<ColorCount> {
     colors
 }
 
-/// Converts the RGBA tuple of the color into a hex code string
-/// hex is all upper case and starts with 'x'.
-///     example view: `x2F3FB6`
-///
-/// # Arguments
-/// color - RGBA struct
-///
-/// # Return
-/// hex code - of the color as a String
-pub fn generate_hex(color: &Rgba<u8>) -> String {
-    let mut hexcode = "x".to_owned();
-
-    let red = format!("{:X}", color[0]);
-    let green = format!("{:X}", color[1]);
-    let blue = format!("{:X}", color[2]);
-    let alpha = format!("{:X}", color[3]);
-
-    hexcode.push_str(&*red);
-    hexcode.push_str(&*green);
-    hexcode.push_str(&*blue);
-    hexcode.push_str(&*alpha);
-
-    hexcode
-}

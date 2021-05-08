@@ -1,13 +1,9 @@
-mod colors;
-mod utils;
-mod picture;
-
 extern crate image;
 
 use image::{GenericImageView};
-use crate::picture::FramedPicture;
-use crate::utils::{get_colors_from, get_most_freq};
 use structopt::StructOpt;
+use paleatra::utils::{get_colors_from, get_most_freq};
+use paleatra::picture::FramedPicture;
 
 /// simple CLI which holds terminal arguments
 #[derive(StructOpt)]

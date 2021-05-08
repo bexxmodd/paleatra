@@ -1,7 +1,6 @@
 use image::Rgba;
 use std::cmp::Ordering;
 use std::hash::{Hash, Hasher};
-use crate::utils;
 
 /// Struct to keep track of number of occurrences of each color
 /// Contains the RGBA tuple and hex code of the color
@@ -17,9 +16,32 @@ impl ColorCount {
     pub fn new(rgba: Rgba<u8>) -> Self {
         ColorCount {
             rgba,
-            hex: utils::generate_hex(&rgba),
+            hex: ColorCount::generate_hex(&rgba),
             count: 1
         }
+    }
+
+    /// Converts the RGBA tuple of the color into a hex code string
+    /// hex is all upper case and starts with 'x'.
+    ///     example view: `x2F3FB6`
+    ///
+    /// # Arguments
+    /// color - RGBA struct
+    ///
+    /// # Return
+    /// hex code - of the color as a String
+    pub fn generate_hex(color: &Rgba<u8>) -> String {
+        let mut hexcode = "x".to_owned();
+
+        let red = format!("{:02X}", color[0]);
+        let green = format!("{:02X}", color[1]);
+        let blue = format!("{:02X}", color[2]);
+
+        hexcode.push_str(&*red);
+        hexcode.push_str(&*green);
+        hexcode.push_str(&*blue);
+
+        hexcode
     }
 
     /// Increment the color's count by one
