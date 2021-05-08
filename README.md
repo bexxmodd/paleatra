@@ -1,19 +1,19 @@
 # paleatra
 
-Command Line program that takes image and produces the copy of the image
-with thin frame and palette made of the 10 most frequent colors.
+Command-Line program that takes an image and produces the copy of the image
+with a thin frame and palette made of the 10 most frequent colors.
 
 # How it works
 
-Currently, program can be used only through the command line. 
-However, next step will be to implement Graphical User Interface to opening image and indicating where to save
+Currently, the program can be used only through the command line. 
+However, the next step will be to implement a Graphical User Interface to opening image and indicating where to save
 
 You have to clone the repo on your local machine and run cargo with two arguments:
 
 - path to the original file.
 - path where to store the copy of it.
 
-Both paths should include file name and extension. Extension should be of image type (e.i jpg, png, etc.)
+Both paths should include file name and extension. The extension should be of image type (e.i jpg, png, etc.)
 
 _Example_:
 
@@ -26,13 +26,14 @@ output:
 
 
 # TODO
--[x] Launch alpha version
 
--[ ] Write automated tests
+- [x] Launch alpha version
 
--[ ] Create a GUI for the program
+- [ ] Write automated tests
 
--[ ] Add new features
+- [ ] Create a GUI for the program
+
+- [ ] Add new features
 
 -----
 
