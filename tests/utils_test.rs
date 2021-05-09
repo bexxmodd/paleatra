@@ -26,7 +26,7 @@ fn test_get_most_freq() {
 
 #[test]
 fn test_get_colors_from() {
-    let img = image::open("img/test_get_color.jpg").unwrap();
+    let img = image::open("img/test_color.jpg").unwrap();
     let set = utils::get_colors_from(&img);
     assert_eq!(set.len(), 1);
 
