@@ -1,4 +1,4 @@
-# paleatra
+# paleatra v0.0.1
 
 Command-Line program that takes an image and produces the copy of the image
 with a thin frame and palette made of the 10 most frequent colors.
@@ -31,9 +31,13 @@ You can check other examples in the `img/results`
 
 - [x] Launch alpha version
 
-- [ ] Write automated tests
+- [x] Write automated tests
+
+- [ ] Expend program to take number of palette boxes as argument
 
 - [ ] Create a GUI for the program
+
+- [ ] Give option to have palette appended below, right, left, or top of the original image
 
 - [ ] Add new features
 
