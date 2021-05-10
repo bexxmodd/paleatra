@@ -51,7 +51,7 @@ impl FramedPicture {
     ///
     /// # Returns
     /// Image which is a palette with n boxes and empty spaces in between
-    pub fn pain_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>)
+    pub fn paint_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>)
                         -> ImageBuffer<Rgba<u8>, Vec<u8>> {
         let mut buffer = self.create_palette();
         let mut xp = 0;

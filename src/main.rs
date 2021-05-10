@@ -29,7 +29,7 @@ fn main() {
 
     let mut imgcpy = FramedPicture::new(
         img.width(), img.height(), Some(n));
-    let palette = imgcpy.pain_palette(&top_n);
+    let palette = imgcpy.paint_palette(&top_n);
     imgcpy.copy_img_into(n, &img);
     imgcpy.stick_piece(&palette);
 
