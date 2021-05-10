@@ -9,6 +9,7 @@ pub struct FramedPicture {
     buffer: ImageBuffer<Rgba<u8>, Vec<u8>>,
     y_divider: u32,
     n_boxes: u32,
+    palette_dims: (u32, u32)
 }
 
 impl FramedPicture {
@@ -35,13 +36,14 @@ impl FramedPicture {
         FramedPicture {
             buffer: tmp,
             y_divider: height + 20,
-            n_boxes: n.unwrap_or(10),
+            n_boxes: n.unwrap_or(10), // activate on next update
+            palette_dims: dims,
         }
     }
 
-    /// Draws the palette with `n` boxes for top `n` colors.
-    /// Algorithm fills the boxes with colored pixels and
-    /// makes jumps between colored boxes with width of a pillar.
+    /// Pains the palette with `n` boxes for top `n` colors.
+    /// Algorithm fills the boxes with colored pixels and makes jumps between
+    /// colored boxes with width of a pillar to keep color boxes separated.
     ///
     /// # Arguments
     /// * n - number of pillars (splits between colors)
@@ -49,31 +51,32 @@ impl FramedPicture {
     ///
     /// # Returns
     /// Image which is a palette with n boxes and empty spaces in between
-    pub fn draw_palette(&mut self,
-                        top_colors: &Vec<(u32, &ColorCount)>)
+    pub fn pain_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>)
                         -> ImageBuffer<Rgba<u8>, Vec<u8>> {
-        let dims = FramedPicture::compute_palette_size(
-            self.buffer.width() - 20, self.n_boxes);
-
-        let pwidth = self.buffer.width() - 20;
-        let pheight = dims.0 + 10;
-
-        let mut palette = ImageBuffer::new(pwidth, pheight);
-
+        let mut buffer = self.create_palette();
         let mut xp = 0;
+
         for color in top_colors { // fill box with each color
-            for _ in 0..dims.0 {
-                let mut yp = 0;
-                while yp < dims.0 {
-                    if xp >= pwidth { break; }
-                    palette.put_pixel(xp, yp, color.1.rgba);
-                    yp += 1;
+            for _ in 0..self.palette_dims.0 {
+                for yp in 0..self.palette_dims.0 {
+                    if xp >= buffer.width() { break; }
+                    buffer.put_pixel(xp, yp, color.1.rgba);
                 }
                 xp += 1;
             }
-            xp += dims.1; // keep space between boxes
+            xp += self.palette_dims.1; // keep space between boxes
         }
-        palette
+        buffer
+    }
+
+    /// Create an empty palette imag which later can be used to fill it with colors
+    ///
+    /// # Returns
+    /// image buffer with dimensions of a palette for `n` top colors
+    pub fn create_palette(&self) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+        let pwidth = self.buffer.width() - 20;
+        let pheight = self.palette_dims.0 + 10;
+        ImageBuffer::new(pwidth, pheight)
     }
 
     /// Copies supplied dynamic image into this image buffer,

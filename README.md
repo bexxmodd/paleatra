@@ -1,4 +1,4 @@
-# paleatra v0.0.1
+# paleatra v.0.0.1
 
 Command-Line program that takes an image and produces the copy of the image
 with a thin frame and palette made of the 10 most frequent colors.
@@ -20,7 +20,8 @@ _Example_:
 ```bash
 cargo run img/rickmorty.jpg img/results/rickmorty_cpy.jpg
 ```
-output:
+
+_output:_
 
 ![rickmorty](https://github.com/bexxmodd/paleatra/blob/main/img/results/rickmorty_cpy.jpg?raw=true)
 

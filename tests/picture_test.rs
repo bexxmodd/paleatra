@@ -22,3 +22,11 @@ fn test_get_dimensions() {
     assert_eq!(dims.0, 220);
     assert_eq!(dims.1, 148);
 }
+
+#[test]
+fn test_create_palette() {
+    let pic = picture::FramedPicture::new(200, 100, Some(10));
+    let buffer = pic.create_palette();
+    assert_eq!(buffer.width(), 200);
+    assert_eq!(buffer.height(), 28);
+}
