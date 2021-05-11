@@ -9,7 +9,8 @@ pub struct FramedPicture {
     buffer: ImageBuffer<Rgba<u8>, Vec<u8>>,
     y_divider: u32,
     n_boxes: u32,
-    palette_dims: (u32, u32)
+    box_size: u32,
+    space_size: u32
 }
 
 impl FramedPicture {
@@ -37,7 +38,8 @@ impl FramedPicture {
             buffer: tmp,
             y_divider: height + 20,
             n_boxes: n.unwrap_or(10), // activate on next update
-            palette_dims: dims,
+            box_size: dims.0,
+            space_size: dims.1
         }
     }
 
@@ -57,14 +59,14 @@ impl FramedPicture {
         let mut xp = 0;
 
         for color in top_colors { // fill box with each color
-            for _ in 0..self.palette_dims.0 {
-                for yp in 0..self.palette_dims.0 {
+            for _ in 0..self.box_size {
+                for yp in 0..self.box_size {
                     if xp >= buffer.width() { break; }
                     buffer.put_pixel(xp, yp, color.1.rgba);
                 }
                 xp += 1;
             }
-            xp += self.palette_dims.1; // keep space between boxes
+            xp += self.space_size; // keep space between boxes
         }
         buffer
     }
@@ -75,7 +77,7 @@ impl FramedPicture {
     /// image buffer with dimensions of a palette for `n` top colors
     pub fn create_palette(&self) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
         let pwidth = self.buffer.width() - 20;
-        let pheight = self.palette_dims.0 + 10;
+        let pheight = self.box_size + 10;
         ImageBuffer::new(pwidth, pheight)
     }
 
