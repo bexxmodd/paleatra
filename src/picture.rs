@@ -54,7 +54,7 @@ impl FramedPicture {
     /// # Returns
     /// Image which is a palette with n boxes and empty spaces in between
     pub fn paint_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>)
-                        -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+        -> ImageBuffer<Rgba<u8>, Vec<u8>> {
         let mut buffer = self.create_palette();
         let mut xp = 0;
 
@@ -76,9 +76,9 @@ impl FramedPicture {
     /// # Returns
     /// image buffer with dimensions of a palette for `n` top colors
     pub fn create_palette(&self) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
-        let pwidth = self.buffer.width() - 20;
-        let pheight = self.box_size + 10;
-        ImageBuffer::new(pwidth, pheight)
+        let width = self.buffer.width() - 20;
+        let height = self.box_size + 10;
+        ImageBuffer::new(width, height)
     }
 
     /// Copies supplied dynamic image into this image buffer,
