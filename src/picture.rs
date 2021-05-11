@@ -56,18 +56,17 @@ impl FramedPicture {
     pub fn paint_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>)
         -> ImageBuffer<Rgba<u8>, Vec<u8>> {
         let mut buffer = self.create_palette();
-        let mut xp = 0;
+        let xs = 0..buffer.width();
 
-        for color in top_colors { // fill box with each color
-            for _ in 0..self.box_size {
-                for yp in 0..self.box_size {
-                    if xp >= buffer.width() { break; }
-                    buffer.put_pixel(xp, yp, color.1.rgba);
-                }
-                xp += 1;
-            }
-            xp += self.space_size; // keep space between boxes
-        }
+        use itertools::Itertools;
+        let spaced_boxes = xs.chunks((self.box_size + self.space_size) as usize);
+        let boxes = spaced_boxes.into_iter().map(|sb| sb.take(self.box_size as usize));
+        let colored_boxes = boxes.zip(top_colors);
+
+        let colored_xs = colored_boxes.flat_map(|(xs, c)| xs.zip(std::iter::repeat(c)));
+        let pixels = colored_xs.flat_map(|(x, c)| (0..self.box_size).map(move |y| (x, y, c)));
+
+        pixels.for_each(|(x, y, c)| buffer.put_pixel(x, y, c.1.rgba));
         buffer
     }
 
