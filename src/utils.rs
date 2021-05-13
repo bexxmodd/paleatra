@@ -1,4 +1,4 @@
-use image::{DynamicImage, GenericImageView};
+use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
 use std::collections::{BinaryHeap, HashSet};
 use crate::colors::ColorCount;
 use std::cmp::Reverse;
@@ -12,7 +12,9 @@ use std::cmp::Reverse;
 /// # Return
 /// * vector - of n most frequent ColorCount structs
 pub fn get_most_freq(set: &HashSet<ColorCount>, n: usize) -> Vec<(u32, &ColorCount)> {
-    let mut heap: BinaryHeap<Reverse<(u32, &ColorCount)>>  = BinaryHeap::with_capacity(n + 1);
+    let mut heap: BinaryHeap<Reverse<(u32, &ColorCount)>> =
+        BinaryHeap::with_capacity(n + 1);
+
     for c in set.into_iter() {
         match heap.peek() {
             Some(v) =>
@@ -55,5 +57,20 @@ pub fn get_colors_from(img: &DynamicImage) -> HashSet<ColorCount> {
         }
     }
     colors
+}
+
+pub trait SaveImage {
+
+    fn get_buffer(&self) -> &ImageBuffer<Rgba<u8>, Vec<u8>>;
+
+    /// Saves current buffer as an image.
+    /// Image format will be set based on the provided path,
+    /// which is expected to include the name of the new file.
+    ///
+    /// # Argument
+    /// * path - full or relative path with new file name and format
+    fn save_img(&self, path: &str) {
+        self.get_buffer().save(path).unwrap();
+    }
 }
 

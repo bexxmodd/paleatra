@@ -2,8 +2,8 @@ extern crate image;
 
 use structopt::StructOpt;
 use image::{GenericImageView};
-use paleatra::utils::{get_colors_from, get_most_freq};
-use paleatra::picture::FramedPicture;
+use paleatra::utils::{get_colors_from, get_most_freq, SaveImage};
+use paleatra::picture::{FramedPicture, Palette};
 
 /// simple CLI which holds terminal arguments
 #[derive(StructOpt)]
@@ -27,13 +27,19 @@ fn main() {
 
     let top_n = get_most_freq(&colors, n as usize);
 
+    let mut a = Palette::new(50, 10, 2);
+    a.paint_palette(&top_n);
+    a.save_img("test.jpg");
+    a.rotate_90degrees();
+    a.save_img("test90.jpg");
+
     let mut imgcpy = FramedPicture::new(
         img.width(), img.height(), Some(n));
-    let palette = imgcpy.paint_palette(&top_n);
     imgcpy.copy_img_into(n, &img);
-    imgcpy.stick_piece(&palette);
+    imgcpy.combine_pieces();
 
-    imgcpy.save_img(&args.copy);
+    imgcpy.save_img("finaltest.jpg");
+    // imgcpy.save_img(&args.copy);
     // palette.save(&args.copy.set_file_name("palette.png")).unwrap();
 
     println!("Total unique pixel colors: {}", colors.len());
