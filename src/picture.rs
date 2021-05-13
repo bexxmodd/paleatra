@@ -2,6 +2,9 @@ use image::{ImageBuffer, DynamicImage, Rgba, GenericImageView, imageops};
 use crate::colors::ColorCount;
 use crate::utils::SaveImage;
 
+/// Palette struct which holds the image buffer of the palette,
+/// number of boxes, box size, and empty space size between boxes
+/// This can be empty, or colored, and can be rotated 90 degrees.
 pub struct Palette {
     buffer: ImageBuffer<Rgba<u8>, Vec<u8>>,
     n_boxes: u32,
@@ -10,11 +13,21 @@ pub struct Palette {
 }
 
 impl Palette {
-    pub fn new(size_length: u32, n_boxes: u32, space_size: u32) -> Self {
+
+    /// Constructor for the Palette which holds `n` number of color boxes
+    ///
+    /// # Arguments
+    /// * side_length - size of each side of the box
+    /// * n_boxes - number of color boxes
+    /// * space_size - thickness of the empty spaces between boxes
+    ///
+    /// # Return
+    /// This palette
+    pub fn new(side_length: u32, n_boxes: u32, space_size: u32) -> Self {
         let width = size_length * n_boxes + space_size * (n_boxes - 1);
         Palette {
-            buffer: ImageBuffer::new(width, size_length),
-            box_size: size_length,
+            buffer: ImageBuffer::new(width, side_length),
+            box_size: side_length,
             n_boxes,
             space_size,
         }
@@ -41,6 +54,7 @@ impl Palette {
         }
     }
 
+    /// Rotates palette image by 90 degrees.
     pub fn rotate_90degrees(&mut self) {
         let dims = self.buffer.dimensions();
         let mut tmp: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(dims.1, dims.0);
