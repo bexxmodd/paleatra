@@ -1,6 +1,5 @@
 use image::{ImageBuffer, DynamicImage, Rgba, GenericImageView, imageops};
 use crate::colors::ColorCount;
-use std::path::PathBuf;
 use crate::utils::SaveImage;
 
 pub struct Palette {
@@ -120,6 +119,10 @@ impl FramedPicture {
         let size = length / (boxes + 1);
         let pillar = (size as f32 * 0.13) as u32;
         (size, pillar)
+    }
+
+    pub fn fill_in_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>) {
+        self.palette.paint_palette(top_colors);
     }
 
     /// Overlays the palette buffer on top of this buffer.

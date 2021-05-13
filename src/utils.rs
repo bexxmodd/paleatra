@@ -2,6 +2,7 @@ use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
 use std::collections::{BinaryHeap, HashSet};
 use crate::colors::ColorCount;
 use std::cmp::Reverse;
+use std::path::PathBuf;
 
 /// Grabs the `n` most frequently present elements from the Binary Tree Map
 ///
@@ -61,6 +62,7 @@ pub fn get_colors_from(img: &DynamicImage) -> HashSet<ColorCount> {
 
 pub trait SaveImage {
 
+    /// Get image buffer reference
     fn get_buffer(&self) -> &ImageBuffer<Rgba<u8>, Vec<u8>>;
 
     /// Saves current buffer as an image.
@@ -68,8 +70,8 @@ pub trait SaveImage {
     /// which is expected to include the name of the new file.
     ///
     /// # Argument
-    /// * path - full or relative path with new file name and format
-    fn save_img(&self, path: &str) {
+    /// * path - full or relative path with new filename and format
+    fn save_img(&self, path: &PathBuf) {
         self.get_buffer().save(path).unwrap();
     }
 }
