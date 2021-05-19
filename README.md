@@ -1,7 +1,10 @@
-# paleatra v.0.0.1
+<p align="center">
+<img title="logo" src="img/logo/paleatra.png" width=400>
+</p>
 
-Command-Line program that takes an image and produces the copy of the image
-with a thin frame and palette made of the 10 most frequent colors.
+Command-Line program that takes an image and produces the copy of the image with a thin frame and palette made of the 10 most frequent colors.
+
+_Current version = v.0.0.1_
 
 # How it works
 
