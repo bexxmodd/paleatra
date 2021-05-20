@@ -24,7 +24,7 @@ impl Palette {
     /// # Return
     /// This palette
     pub fn new(side_length: u32, n_boxes: u32, space_size: u32) -> Self {
-        let width = size_length * n_boxes + space_size * (n_boxes - 1);
+        let width = side_length * n_boxes + space_size * (n_boxes - 1);
         Palette {
             buffer: ImageBuffer::new(width, side_length),
             box_size: side_length,
@@ -62,6 +62,11 @@ impl Palette {
             tmp.put_pixel(p.1, p.0, *p.2);
         }
         self.buffer = tmp;
+    }
+
+    /// Get the image dimensions of this image buffer in a form of tuple
+    pub fn get_dimensions(&self) -> (u32, u32) {
+        self.buffer.dimensions()
     }
 }
 
