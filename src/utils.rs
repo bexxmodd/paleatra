@@ -76,3 +76,11 @@ pub trait SaveImage {
     }
 }
 
+#[derive(PartialEq)]
+pub enum Placement {
+    Top,
+    Bottom,
+    Left,
+    Right,
+}
+

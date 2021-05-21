@@ -2,7 +2,7 @@ extern crate image;
 
 use structopt::StructOpt;
 use image::{GenericImageView};
-use paleatra::utils::{get_colors_from, get_most_freq, SaveImage};
+use paleatra::utils::{get_colors_from, get_most_freq, SaveImage, Placement};
 use paleatra::picture::FramedPicture;
 
 /// simple CLI which holds terminal arguments
@@ -27,8 +27,9 @@ fn main() {
 
     let top_n = get_most_freq(&colors, n as usize);
 
+    let place = Placement::Bottom;
     let mut imgcpy = FramedPicture::new(
-        img.width(), img.height(), Some(n));
+        img.width(), img.height(), Some(n), place);
     imgcpy.fill_in_palette(&top_n);
     imgcpy.copy_img_into(n, &img);
     imgcpy.combine_pieces();
