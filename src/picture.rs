@@ -124,6 +124,15 @@ impl FramedPicture {
         }
     }
 
+    /// Functions computes and sets the divider point for buffer and palette layers
+    ///
+    /// # Arguments
+    /// * placement - where palette is expected to be placed
+    /// * height - of the original image
+    /// * width - of the original image
+    ///
+    /// # Return
+    /// Tuple with (x,y) coordinates
     fn _set_layers_divider(placement: &Placement,
                            height: u32, width: u32) -> (u32, u32) {
         let mut y_divider = 10;
