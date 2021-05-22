@@ -138,7 +138,7 @@ impl FramedPicture {
         let mut y_divider = 10;
         let mut x_divider = 10;
         if placement == &Placement::Bottom {
-            y_divider += height;
+            y_divider += height + 10;
         } else if placement == &Placement::Left {
             x_divider += width;
         }
