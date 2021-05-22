@@ -144,7 +144,7 @@ impl FramedPicture {
         }
         (x_divider, y_divider)
     }
-
+  
     /// Copies supplied dynamic image into this image buffer,
     /// while preserving the allocated space for frame borders
     ///
@@ -188,6 +188,7 @@ impl FramedPicture {
         // if self.placement == Placement::Left || self.placement == Placement::Right {
         //     self.palette.rotate_90degrees();
         // }
+
     }
 
     /// Overlays the palette buffer on top of this buffer.
