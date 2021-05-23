@@ -84,3 +84,14 @@ pub enum Placement {
     Right,
 }
 
+pub struct BoxShape {
+    pub width: u32,
+    pub height: u32,
+}
+
+impl BoxShape {
+    pub fn new(width: u32, height: u32) -> Self {
+        BoxShape { width, height }
+    }
+}
+

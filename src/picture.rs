@@ -1,14 +1,14 @@
 use image::{ImageBuffer, DynamicImage, Rgba, GenericImageView, imageops};
 use crate::colors::ColorCount;
-use crate::utils::{SaveImage, Placement};
+use crate::utils::{SaveImage, Placement, BoxShape};
 
 /// Palette struct which holds the image buffer of the palette,
 /// number of boxes, box size, and empty space size between boxes
 /// This can be empty, or colored, and can be rotated 90 degrees.
 pub struct Palette {
     buffer: ImageBuffer<Rgba<u8>, Vec<u8>>,
+    box_size: BoxShape,
     n_boxes: u32,
-    box_size: u32,
     space_size: u32,
 }
 
@@ -23,11 +23,12 @@ impl Palette {
     ///
     /// # Return
     /// This palette
-    pub fn new(side_length: u32, n_boxes: u32, space_size: u32) -> Self {
-        let width = side_length * n_boxes + space_size * (n_boxes - 1);
+    pub fn new(dims: (u32, u32), n_boxes: u32, space_size: u32) -> Self {
+        let width = dims.0 * n_boxes + space_size * (n_boxes - 1);
+        let box_size = BoxShape::new(dims.0, dims.1);
         Palette {
-            buffer: ImageBuffer::new(width, side_length),
-            box_size: side_length,
+            buffer: ImageBuffer::new(width, dims.1),
+            box_size,
             n_boxes,
             space_size,
         }
@@ -43,8 +44,8 @@ impl Palette {
     pub fn paint_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>) {
         let mut xp = 0;
         for color in top_colors { // fill box with each color
-            for _ in 0..self.box_size {
-                for yp in 0..self.box_size {
+            for _ in 0..self.box_size.width {
+                for yp in 0..self.box_size.height {
                     if xp >= self.buffer.width() { break; }
                     self.buffer.put_pixel(xp, yp, color.1.rgba);
                 }
@@ -82,8 +83,6 @@ pub struct FramedPicture {
 
 impl FramedPicture {
 
-    // TODO resizing of palette boxes for vertical alignment
-
     /// Constructor that takes the dimensions of the original image
     /// and allocates additional space for frame. Then it fills the buffer
     /// with bright beige color and sets the divider y coordinate.
@@ -98,8 +97,12 @@ impl FramedPicture {
     /// # Return
     /// * `FramedPicture` struct
     pub fn new(width: u32, height: u32, n: Option<u32>, placement: Placement) -> Self {
+        let mut box_width = width;
+        if placement == Placement::Left || placement == Placement::Right {
+            box_width = height;
+        }
         let dims = FramedPicture::compute_palette_size(
-            width, n.unwrap_or(10));
+            box_width, n.unwrap_or(10));
 
         let mut w = 0;
         let mut h = 0;
@@ -113,8 +116,10 @@ impl FramedPicture {
 
         let tmp: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::from_fn(
             w, h, |_,_| { Rgba([255, 252, 234, 1]) });
-        let p = Palette::new(dims.0, n.unwrap_or(10), dims.1);
-        let divider = FramedPicture::_set_layers_divider(&placement, height, width);
+        let p = Palette::new(
+            (dims.0, dims.0), n.unwrap_or(10), dims.1
+        );
+        let divider = FramedPicture::_set_layers_divider(&placement, width, height);
 
         FramedPicture {
             buffer: tmp,
@@ -134,13 +139,13 @@ impl FramedPicture {
     /// # Return
     /// Tuple with (x,y) coordinates
     fn _set_layers_divider(placement: &Placement,
-                           height: u32, width: u32) -> (u32, u32) {
+                           width: u32, height: u32) -> (u32, u32) {
         let mut y_divider = 10;
         let mut x_divider = 10;
         if placement == &Placement::Bottom {
             y_divider += height + 10;
-        } else if placement == &Placement::Left {
-            x_divider += width;
+        } else if placement == &Placement::Right {
+            x_divider += width + 10;
         }
         (x_divider, y_divider)
     }
@@ -155,7 +160,7 @@ impl FramedPicture {
         let mut starting_x = 0;
         let mut starting_y = 0;
         if self.placement == Placement::Left {
-            starting_x = self.palette.get_dimensions().1 + size;
+            starting_x = self.palette.get_dimensions().0 + size;
         } else if self.placement == Placement::Top {
             starting_y = self.palette.get_dimensions().1 + size;
         }
@@ -185,9 +190,9 @@ impl FramedPicture {
 
     pub fn fill_in_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>) {
         self.palette.paint_palette(top_colors);
-        // if self.placement == Placement::Left || self.placement == Placement::Right {
-        //     self.palette.rotate_90degrees();
-        // }
+        if self.placement == Placement::Left || self.placement == Placement::Right {
+            self.palette.rotate_90degrees();
+        }
     }
 
     /// Overlays the palette buffer on top of this buffer.
@@ -196,13 +201,16 @@ impl FramedPicture {
     /// # Arguments
     /// palette - image buffer that contains n boxes separated with pillars.
     pub fn combine_pieces(&mut self) {
-        let divider =
-            if self.placement == Placement::Top
-                || self.placement == Placement::Bottom {
-                self.layer_divider.1
-            } else { self.layer_divider.0 };
+        // let divider =
+        //     if self.placement == Placement::Top
+        //         || self.placement == Placement::Bottom {
+        //         self.layer_divider.1
+        //     } else { self.layer_divider.0 };
         imageops::overlay(
-            &mut self.buffer, self.palette.get_buffer(), 10, divider);
+            &mut self.buffer,
+            self.palette.get_buffer(),
+            self.layer_divider.0,
+            self.layer_divider.1);
     }
 
     /// Get the image dimensions of this image buffer in a form of tuple
