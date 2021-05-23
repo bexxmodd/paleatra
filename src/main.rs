@@ -27,7 +27,7 @@ fn main() {
 
     let top_n = get_most_freq(&colors, n as usize);
 
-    let place = Placement::Bottom;
+    let place = Placement::Left;
     let mut imgcpy = FramedPicture::new(
         img.width(), img.height(), Some(n), place
     );
