@@ -31,7 +31,7 @@ fn main() {
     let mut imgcpy = FramedPicture::new(
         img.width(), img.height(), Some(n), place
     );
-    imgcpy.fill_in_palette(&top_n);
+    imgcpy.fill_in_palette(top_n);
     imgcpy.copy_img_into(n, &img);
     imgcpy.combine_pieces();
 

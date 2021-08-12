@@ -1,6 +1,6 @@
-use image::{ImageBuffer, DynamicImage, Rgba, GenericImageView, imageops};
 use crate::colors::ColorCount;
-use crate::utils::{SaveImage, Placement, BoxShape};
+use crate::utils::{BoxShape, Placement, SaveImage};
+use image::{imageops, DynamicImage, GenericImageView, ImageBuffer, Rgba};
 
 /// Palette struct which holds the image buffer of the palette,
 /// number of boxes, box size, and empty space size between boxes
@@ -13,7 +13,6 @@ pub struct Palette {
 }
 
 impl Palette {
-
     /// Constructor for the Palette which holds `n` number of color boxes
     ///
     /// # Arguments
@@ -41,13 +40,16 @@ impl Palette {
     /// # Arguments
     /// * n - number of pillars (splits between colors)
     /// * top_colors - vector with top n colors from original img
-    pub fn paint_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>) {
+    pub fn paint_palette(&mut self, top_colors: Vec<&ColorCount>) {
         let mut xp = 0;
-        for color in top_colors { // fill box with each color
+        for color in top_colors {
+            // fill box with each color
             for _ in 0..self.box_size.width {
                 for yp in 0..self.box_size.height {
-                    if xp >= self.buffer.width() { break; }
-                    self.buffer.put_pixel(xp, yp, color.1.rgba);
+                    if xp >= self.buffer.width() {
+                        break;
+                    }
+                    self.buffer.put_pixel(xp, yp, color.rgba);
                 }
                 xp += 1;
             }
@@ -58,7 +60,8 @@ impl Palette {
     /// Rotates palette image by 90 degrees.
     pub fn rotate_90degrees(&mut self) {
         let dims = self.buffer.dimensions();
-        let mut tmp: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(dims.1, dims.0);
+        let mut tmp: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::new(
+                                                    dims.1, dims.0);
         for p in self.buffer.enumerate_pixels() {
             tmp.put_pixel(p.1, p.0, *p.2);
         }
@@ -82,7 +85,6 @@ pub struct FramedPicture {
 }
 
 impl FramedPicture {
-
     /// Constructor that takes the dimensions of the original image
     /// and allocates additional space for frame. Then it fills the buffer
     /// with bright beige color and sets the divider y coordinate.
@@ -92,34 +94,39 @@ impl FramedPicture {
     /// # Arguments
     /// * width - of the image buffer
     /// * height - of the image buffer
-    /// * n - # boxes is an optional. If this arg isn't supplied program will use 10
+    /// * n - # boxes is an optional. Default value is 10
     ///
     /// # Return
     /// * `FramedPicture` struct
-    pub fn new(width: u32, height: u32, n: Option<u32>, placement: Placement) -> Self {
+    pub fn new(
+        width: u32, height: u32, n: Option<u32>, placement: Placement) -> Self {
         let mut box_width = width;
         if placement == Placement::Left || placement == Placement::Right {
             box_width = height;
         }
         let dims = FramedPicture::compute_palette_size(
-            box_width, n.unwrap_or(10));
+                            box_width, n.unwrap_or(10));
 
-        let mut w = 0;
-        let mut h = 0;
+        let mut _w = 0;
+        let mut _h = 0;
         if placement == Placement::Top || placement == Placement::Bottom {
-            w = width + 20;
-            h = height + 30 + dims.0;
+            _w = width + 20;
+            _h = height + 30 + dims.0;
         } else {
-            w = width + 30 + dims.0;
-            h = height + 20;
+            _w = width + 30 + dims.0;
+            _h = height + 20;
         }
 
-        let tmp: ImageBuffer<Rgba<u8>, Vec<u8>> = ImageBuffer::from_fn(
-            w, h, |_,_| { Rgba([255, 252, 234, 1]) });
+        let tmp: ImageBuffer<Rgba<u8>, Vec<u8>> =
+            ImageBuffer::from_fn(
+                _w, _h, |_, _| Rgba([255, 252, 234, 1]));
         let p = Palette::new(
-            (dims.0, dims.0), n.unwrap_or(10), dims.1
+            (dims.0, dims.0),
+            n.unwrap_or(10),
+            dims.1
         );
-        let divider = FramedPicture::_set_layers_divider(&placement, width, height);
+        let divider = FramedPicture::_set_layers_divider(
+                                                    &placement, width, height);
 
         FramedPicture {
             buffer: tmp,
@@ -138,8 +145,8 @@ impl FramedPicture {
     ///
     /// # Return
     /// Tuple with (x,y) coordinates
-    fn _set_layers_divider(placement: &Placement,
-                           width: u32, height: u32) -> (u32, u32) {
+    fn _set_layers_divider(
+        placement: &Placement, width: u32, height: u32) -> (u32, u32) {
         let mut y_divider = 10;
         let mut x_divider = 10;
         if placement == &Placement::Bottom {
@@ -174,7 +181,8 @@ impl FramedPicture {
     }
 
     /// Calculate the size of each color box for palette layer.
-    /// Each box is a square and includes the space for a pillar, that divides boxes
+    /// Each box is a square and includes the space for a pillar,
+    /// that divides boxes
     ///
     /// # Arguments
     /// * length - of the whole palette
@@ -182,21 +190,22 @@ impl FramedPicture {
     ///
     /// # Returns
     /// Tuple with the size of square's sides and width of a pillar
-    pub fn compute_palette_size(length: u32, boxes: u32) -> (u32, u32){
+    pub fn compute_palette_size(length: u32, boxes: u32) -> (u32, u32) {
         let size = length / (boxes + 1);
         let pillar = (size as f32 * 0.13) as u32;
         (size, pillar)
     }
 
-    pub fn fill_in_palette(&mut self, top_colors: &Vec<(u32, &ColorCount)>) {
+    pub fn fill_in_palette(&mut self, top_colors: Vec<&ColorCount>) {
         self.palette.paint_palette(top_colors);
-        if self.placement == Placement::Left || self.placement == Placement::Right {
+        if self.placement == Placement::Left 
+        || self.placement == Placement::Right {
             self.palette.rotate_90degrees();
         }
     }
 
     /// Overlays the palette buffer on top of this buffer.
-    /// This is done on an empty space preserved in this buffer for palette boxes.
+    /// This is done on an empty space preserved for palette boxes.
     ///
     /// # Arguments
     /// palette - image buffer that contains n boxes separated with pillars.
@@ -210,15 +219,18 @@ impl FramedPicture {
             &mut self.buffer,
             self.palette.get_buffer(),
             self.layer_divider.0,
-            self.layer_divider.1);
+            self.layer_divider.1,
+        );
     }
 
     /// Get the image dimensions of this image buffer in a form of tuple
+    ///
+    /// # Returns
+    /// Tuple of x,y dimensions of a given buffer
     pub fn get_dimensions(&self) -> (u32, u32) {
         self.buffer.dimensions()
     }
 }
-
 
 impl SaveImage for Palette {
     fn get_buffer(&self) -> &ImageBuffer<Rgba<u8>, Vec<u8>> {

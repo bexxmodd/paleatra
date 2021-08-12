@@ -1,8 +1,9 @@
 use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
 use std::collections::{BinaryHeap, HashSet};
-use crate::colors::ColorCount;
 use std::cmp::Reverse;
 use std::path::PathBuf;
+use crate::colors::ColorCount;
+
 
 /// Grabs the `n` most frequently present elements from the Binary Tree Map
 ///
@@ -12,7 +13,7 @@ use std::path::PathBuf;
 ///
 /// # Return
 /// * vector - of n most frequent ColorCount structs
-pub fn get_most_freq(set: &HashSet<ColorCount>, n: usize) -> Vec<(u32, &ColorCount)> {
+pub fn get_most_freq(set: &HashSet<ColorCount>, n: usize) -> Vec<&ColorCount> {
     let mut heap: BinaryHeap<Reverse<(u32, &ColorCount)>> =
         BinaryHeap::with_capacity(n + 1);
 
@@ -28,7 +29,8 @@ pub fn get_most_freq(set: &HashSet<ColorCount>, n: usize) -> Vec<(u32, &ColorCou
         }
     }
     heap.into_sorted_vec().into_iter()
-        .map(|r| r.0).collect()
+        .map(|r| r.0.1)
+        .collect()
 }
 
 /// Generate ColorCount struct and calculates the number of
@@ -76,6 +78,7 @@ pub trait SaveImage {
     }
 }
 
+/// Enum to select the position of the color palette box
 #[derive(PartialEq)]
 pub enum Placement {
     Top,
