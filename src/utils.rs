@@ -1,7 +1,9 @@
 use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
-use std::collections::{BinaryHeap, HashSet};
-use std::cmp::Reverse;
-use std::path::PathBuf;
+use std::{
+    collections::{BinaryHeap, HashSet},
+    cmp::Reverse,
+    path::PathBuf,
+};
 use crate::colors::ColorCount;
 
 
@@ -20,7 +22,9 @@ pub fn get_most_freq(set: &HashSet<ColorCount>, n: usize) -> Vec<&ColorCount> {
     for c in set.into_iter() {
         match heap.peek() {
             Some(v) =>
-                if v.0.1.measure_distance(c) < i32::abs(250) { continue; },
+                if v.0.1.measure_distance(c) < i32::abs(250) {
+                    continue
+                },
             _ => {}
         }
         heap.push(Reverse((c.count, c)));

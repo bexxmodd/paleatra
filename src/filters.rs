@@ -1,15 +1,13 @@
-use image::{ImageBuffer, Rgb};
+use image::DynamicImage;
 
 pub trait Filter {
-    fn grayscale(img: &ImageBuffer) -> ImageBuffer<Rgb, Vec<u8>> {
-        let grayscale = img.clone();
-        for p in img.enumerate_pixels() {
-            let r = *p.2.0;
-            let g = *p.2.1;
-            let b = *p.2.2;
+    fn grayscale(img: &DynamicImage) -> DynamicImage {
+        img.grayscale()
+    }
 
-            let gray = (r + g + b) / 3;
-            // grayscale.put_pixel(p.0, p.1, Rgb<)
-        }
+    fn invert_colors(img: &DynamicImage) -> DynamicImage {
+        let mut inv_img = img.clone();
+        inv_img.invert();
+        inv_img
     }
 }

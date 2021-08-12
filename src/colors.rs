@@ -1,6 +1,7 @@
 use image::Rgba;
-use std::cmp::Ordering;
-use std::hash::{Hash, Hasher};
+use std::{cmp::Ordering,
+    hash::{Hash, Hasher},
+};
 
 /// Struct to keep track of number of occurrences of each color
 /// Contains the RGBA tuple and hex code of the color

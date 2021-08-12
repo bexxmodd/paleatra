@@ -2,8 +2,10 @@ extern crate image;
 
 use structopt::StructOpt;
 use image::{GenericImageView};
-use paleatra::utils::{get_colors_from, get_most_freq, SaveImage, Placement};
-use paleatra::picture::FramedPicture;
+use paleatra::{
+    utils::{get_colors_from, get_most_freq, SaveImage, Placement},
+    picture::FramedPicture,
+};
 
 /// simple CLI which holds terminal arguments
 #[derive(StructOpt)]
@@ -22,7 +24,8 @@ fn main() {
     let n = 10u32; // number of colors in palette
     let img = image::open(&args.path).unwrap();
 
-    println!("Original image dimensions: {}x{}", img.dimensions().0, img.dimensions().1);
+    println!("Original image dimensions: {}x{}",
+            img.dimensions().0, img.dimensions().1);
     let colors = get_colors_from(&img);
 
     let top_n = get_most_freq(&colors, n as usize);

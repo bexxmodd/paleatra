@@ -1,4 +1,5 @@
 use crate::colors::ColorCount;
+use crate::filters::Filter;
 use crate::utils::{BoxShape, Placement, SaveImage};
 use image::{imageops, DynamicImage, GenericImageView, ImageBuffer, Rgba};
 
@@ -231,6 +232,8 @@ impl FramedPicture {
         self.buffer.dimensions()
     }
 }
+
+impl Filter for FramedPicture {}
 
 impl SaveImage for Palette {
     fn get_buffer(&self) -> &ImageBuffer<Rgba<u8>, Vec<u8>> {
