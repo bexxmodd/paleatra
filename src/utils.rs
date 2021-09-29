@@ -1,8 +1,10 @@
 use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
 use std::{
-    collections::{BinaryHeap, HashSet},
     cmp::Reverse,
+    collections::{BinaryHeap, HashSet},
     path::PathBuf,
+    sync::{Arc, Mutex},
+    thread
 };
 use crate::colors::ColorCount;
 
@@ -46,24 +48,45 @@ pub fn get_most_freq(set: &HashSet<ColorCount>, n: usize) -> Vec<&ColorCount> {
 /// # Returns
 /// * Binary Tree Set that contains ColorCount structs
 pub fn get_colors_from(img: &DynamicImage) -> HashSet<ColorCount> {
-    let mut colors : HashSet<ColorCount> = HashSet::new();
+    let colors = Arc::new(Mutex::new(HashSet::new()));
+    let tmp: Arc<Mutex<Vec<_>>> = Arc::new(Mutex::new(img.pixels().collect()));
+    let mut handles = vec![];
 
-    for i in img.pixels() {
-        let c = ColorCount::new(i.2);
+    let slice = tmp.lock().unwrap().len() / 5;
+    let mut start = 0usize - slice;
+    let mut finish = 0;
 
-        if !colors.contains(&c) {
-            colors.insert(c);
-        } else {
-            match colors.take(&c) {
-                Some(mut v) => {
-                    v.increment_count();
-                    colors.insert(v);
-                },
-                None => {}
+    for _ in 0..5 {
+        start += slice;
+        finish += slice;
+        let colors = Arc::clone(&colors);
+        let tmp = Arc::clone(&tmp);
+        let handle = thread::spawn(move || {
+            for i in &tmp.lock().unwrap()[start..finish] {
+                let c = ColorCount::new(i.2);
+                let mut col_set = colors.lock().unwrap();
+
+                if !col_set.contains(&c) {
+                    col_set.insert(c);
+                } else {
+                    match col_set.take(&c) {
+                        Some(mut v) => {
+                            v.increment_count();
+                            col_set.insert(v);
+                        },
+                        None => {}
+                    }
+                }
             }
-        }
+        });
+        handles.push(handle);
     }
-    colors
+
+    for handle in handles {
+        handle.join().unwrap();
+    }
+    let res  = *colors.lock().unwrap();
+    res
 }
 
 pub trait SaveImage {
@@ -97,7 +120,13 @@ pub struct BoxShape {
 }
 
 impl BoxShape {
-    pub fn new(width: u32, height: u32) -> Self {
+    pub fn new<TW, TH>(w: TW, h: TH) -> Self
+        where
+            TW: Into<u32>,
+            TH: Into<u32>
+    {
+        let width = w.into();
+        let height = h.into();
         BoxShape { width, height }
     }
 }
